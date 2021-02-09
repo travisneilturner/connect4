@@ -19,6 +19,7 @@ func main() {
 	stat, _ := os.Stdin.Stat()
 	if (stat.Mode() & os.ModeCharDevice) == 0 {
 		doNonInteractiveGame(board)
+		os.Exit(0)
 	}
 
 	doInteractiveGame(board)
@@ -26,9 +27,12 @@ func main() {
 }
 
 func doNonInteractiveGame(board *game.Board) {
-	player := 1
 	reader := bufio.NewScanner(os.Stdin)
-	reader.Scan()
+	if !reader.Scan() {
+		usage()
+		os.Exit(-1)
+	}
+
 	moves := strings.Split(reader.Text(), " ")
 
 	intMoves := make([]int, len(moves))
@@ -41,7 +45,7 @@ func doNonInteractiveGame(board *game.Board) {
 		intMoves[i] = val
 	}
 
-	result, err := board.AddAllPieces(intMoves, player)
+	result, err := board.AddAllPieces(intMoves)
 	if err != nil {
 		fmt.Println("error playing game: " + err.Error())
 		os.Exit(-1)
@@ -54,11 +58,10 @@ func doNonInteractiveGame(board *game.Board) {
 
 	if result.Winner == -1 {
 		fmt.Println("DRAW")
-		os.Exit(0)
+		return
 	}
 
 	fmt.Println("WINNER: Player " + strconv.Itoa(result.Winner))
-	os.Exit(0)
 }
 
 func doInteractiveGame(board *game.Board) {
@@ -67,7 +70,10 @@ func doInteractiveGame(board *game.Board) {
 
 	for {
 		fmt.Print("Player " + strconv.Itoa(player) + " enter a column: ")
-		reader.Scan()
+		if !reader.Scan() {
+			usage()
+			os.Exit(-1)
+		}
 
 		if len(reader.Text()) == 0 {
 			fmt.Println("Please enter a number between 0 and " + strconv.Itoa(len(board.State[0])-1))
@@ -89,11 +95,11 @@ func doInteractiveGame(board *game.Board) {
 		if outcome != nil {
 			if outcome.Winner == -1 {
 				fmt.Println("DRAW")
-				os.Exit(0)
+				return
 			}
 
 			fmt.Println("WINNER: Player " + strconv.Itoa(player))
-			os.Exit(0)
+			return
 		}
 
 		if player == 1 {
@@ -102,4 +108,15 @@ func doInteractiveGame(board *game.Board) {
 			player = 1
 		}
 	}
+}
+
+func usage() {
+	fmt.Println("For interactive mode, do:")
+	fmt.Println("docker run -it travisneilturner/connect4")
+	fmt.Println()
+	fmt.Println("For non-interactive mode, do:")
+	fmt.Println("echo [list of space-delimited columns] | docker run -i travisneilturner/connect4")
+	fmt.Println()
+	fmt.Println("Example: ")
+	fmt.Println("echo 0 1 0 1 0 1 0 | docker run -i travisneilturner/connect4")
 }

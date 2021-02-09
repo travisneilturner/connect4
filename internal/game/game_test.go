@@ -158,3 +158,12 @@ func TestDraw(t *testing.T) {
 		Winner: -1,
 	}, outcome, "outcome should be a draw")
 }
+
+func TestAddAllPieces(t *testing.T) {
+	board, _ := NewBoard(4, 4)
+	outcome, _ := board.AddAllPieces([]int{0, 1, 0, 1, 0, 1, 0})
+
+	assert.Equal(t, &Outcome{
+		Winner: 1,
+	}, outcome, "player 1 should be the winner")
+}

@@ -86,7 +86,8 @@ func (b *Board) AddPiece(col int, player int) (*Outcome, error) {
 
 // AddAllPieces adds all the pieces to the board one by one and stops if there is a
 // winner, a draw, or an error
-func (b *Board) AddAllPieces(cols []int, player int) (*Outcome, error) {
+func (b *Board) AddAllPieces(cols []int) (*Outcome, error) {
+	player := 1
 	for i, col := range cols {
 		outcome, err := b.AddPiece(col, player)
 		if err != nil {
@@ -179,7 +180,10 @@ func (b *Board) checkWinner(col int) *Outcome {
 	// last but not least check if all the columns are full, if so we have a draw
 	full := true
 	for i := range b.Top {
-		full = full && b.Top[i] == -1
+		if b.Top[i] != -1 {
+			full = false
+			break
+		}
 	}
 
 	if full {
@@ -198,7 +202,6 @@ starting from [rowStart, colStart) and returns the number of pieces that match "
 */
 func (b *Board) checkDirection(player int, rowStart int, colStart int, rowDir int, colDir int, stop int) int {
 	matches := 0
-	isMatch := true
 
 	row := rowStart
 	col := colStart
@@ -213,8 +216,7 @@ func (b *Board) checkDirection(player int, rowStart int, colStart int, rowDir in
 		row = row + rowDir
 		col = col + colDir
 
-		isMatch = isMatch && b.State[row][col] == player
-		if isMatch {
+		if b.State[row][col] == player {
 			matches++
 		} else {
 			return matches
