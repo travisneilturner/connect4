@@ -206,15 +206,15 @@ func (b *Board) checkDirection(player int, rowStart int, colStart int, rowDir in
 	row := rowStart
 	col := colStart
 	for i := 0; i < stop; i++ {
-		if (rowDir > 0 && row+1 == len(b.State) ||
-			rowDir < 0 && row-1 < 0 ||
-			colDir > 0 && col+1 == len(b.State[0])) ||
-			colDir < 0 && col-1 < 0 {
-			return matches
-		}
-
 		row = row + rowDir
 		col = col + colDir
+
+		if (rowDir > 0 && row == len(b.State) ||
+			rowDir < 0 && row < 0 ||
+			colDir > 0 && col == len(b.State[0])) ||
+			colDir < 0 && col < 0 {
+			return matches
+		}
 
 		if b.State[row][col] == player {
 			matches++
