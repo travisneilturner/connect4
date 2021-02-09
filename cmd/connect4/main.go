@@ -30,7 +30,7 @@ func main() {
 func doNonInteractiveGame(board *game.Board) {
 	reader := bufio.NewScanner(os.Stdin)
 
-	// non-interactive mode expects input on SStdin so if we get EOF it's an error
+	// non-interactive mode expects input on Stdin so if we get EOF it's an error
 	if !reader.Scan() {
 		usage()
 		os.Exit(-1)
@@ -42,7 +42,7 @@ func doNonInteractiveGame(board *game.Board) {
 	for i, mv := range moves {
 		val, err := strconv.Atoi(mv)
 		if err != nil {
-			fmt.Println("move in pos " + strconv.Itoa(i) + " is invalid, must be a number from 0 to " + strconv.Itoa(len(board.State[0])-1))
+			fmt.Println("input \"" + mv + "\" in pos " + strconv.Itoa(i+1) + " is invalid, must be a number from 0 to " + strconv.Itoa(len(board.State[0])-1))
 			os.Exit(-1)
 		}
 		intMoves[i] = val
@@ -114,17 +114,18 @@ func doInteractiveGame(board *game.Board) {
 }
 
 func usage() {
-	fmt.Println("For interactive mode, do:")
-	fmt.Println("> docker run -it travisneilturner/connect4")
-	fmt.Println()
-	fmt.Println("For non-interactive mode (no TTY attached), do:")
-	fmt.Println("> echo [list of space-delimited columns] | docker run -i travisneilturner/connect4")
-	fmt.Println()
-	fmt.Println("Example: ")
-	fmt.Println("> echo 0 1 0 1 0 1 0 | docker run -i travisneilturner/connect4")
-	fmt.Println()
-	fmt.Println("You can also run the image then enter a list of moves, like so:")
-	fmt.Println("> docker run -i travisneilturner/connect4")
-	fmt.Println("> 0 1 0 1 0 1 0")
-	fmt.Println()
+	str := `For interactive mode, do: 
+> docker run -it travisneilturner/connect4
+
+For non-interactive mode (no TTY attached), do:
+> echo [list of space-delimited columns] | docker run -i travisneilturner/connect4
+
+Example: 
+> echo 0 1 0 1 0 1 0 | docker run -i travisneilturner/connect4
+
+You can also run the image then enter a list of moves, like so:
+> docker run -i travisneilturner/connect4
+> 0 1 0 1 0 1 0
+`
+	fmt.Println(str)
 }

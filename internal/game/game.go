@@ -91,7 +91,7 @@ func (b *Board) AddAllPieces(cols []int) (*Outcome, error) {
 	for i, col := range cols {
 		outcome, err := b.AddPiece(col, player)
 		if err != nil {
-			return nil, errors.New("move at pos " + strconv.Itoa(i) + " caused an error: " + err.Error())
+			return nil, errors.New("move at pos " + strconv.Itoa(i+1) + " caused an error: " + err.Error())
 		}
 
 		if outcome != nil {
@@ -209,14 +209,7 @@ func (b *Board) checkDirection(player int, rowStart int, colStart int, rowDir in
 		row = row + rowDir
 		col = col + colDir
 
-		if (rowDir > 0 && row == len(b.State) ||
-			rowDir < 0 && row < 0 ||
-			colDir > 0 && col == len(b.State[0])) ||
-			colDir < 0 && col < 0 {
-			return matches
-		}
-
-		if b.State[row][col] == player {
+		if row >= 0 && row < len(b.State) && col >= 0 && col < len(b.State[0]) && b.State[row][col] == player {
 			matches++
 		} else {
 			return matches
